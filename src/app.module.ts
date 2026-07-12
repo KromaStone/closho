@@ -5,11 +5,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { RolesModule } from './roles/roles.module';
+import { SessionsModule } from './sessions/sessions.module';
+import { validateEnv } from './global/config/env.validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validateEnv,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -21,12 +25,15 @@ import { AuthModule } from './auth/auth.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
-        synchronize: true, // DO NOT USE IN PRODUCTION
+        synchronize: false, // Migrations used instead
+
       }),
       inject: [ConfigService],
     }),
     UsersModule,
     AuthModule,
+    RolesModule,
+    SessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
